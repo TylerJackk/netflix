@@ -1,4 +1,7 @@
-
+## Requirements
+```bigquery
+python 3.9.0b5
+```
 ## Project Structure
 ```
 .
