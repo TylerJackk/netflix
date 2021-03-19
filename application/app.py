@@ -1,14 +1,12 @@
 from chalice import Chalice
 
-from chalicelib.constants import A
-from chalicelib import MESSAGE
 
 app = Chalice(app_name='application')
 
 
 @app.route('/')
 def index():
-    return {'hello': MESSAGE, "A": A}
+    return {'hello': 'world'}
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
