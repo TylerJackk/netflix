@@ -3,7 +3,7 @@ import json
 import boto3
 import pendulum
 
-from application.chalicelib.db_manager.constants import NF_BUCKET, REGION
+from chalicelib.db_manager.constants import NF_BUCKET, REGION
 
 
 class S3Client(object):
