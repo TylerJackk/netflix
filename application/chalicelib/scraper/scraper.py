@@ -5,8 +5,22 @@ import requests
 from decimal import Decimal
 
 from chalicelib.msg_queue.sqs import send_sqs_msg
-from chalicelib.scraper.constants import SEARCH, HEADERS, COUNTRY_CODE_ID_MAPPING, DETAIL, BGIMAGES, GENRES, \
-    PEOPLE, ACTOR, CREATOR, COUNTRIES, EPISODES, STATIC_INFO, MOVIE, TV
+from chalicelib.scraper.constants import (
+    SEARCH,
+    HEADERS,
+    COUNTRY_CODE_ID_MAPPING,
+    DETAIL,
+    BGIMAGES,
+    GENRES,
+    PEOPLE,
+    ACTOR,
+    CREATOR,
+    COUNTRIES,
+    EPISODES,
+    STATIC_INFO,
+    MOVIE,
+    TV,
+)
 
 
 class UnogsScraper:
@@ -94,7 +108,7 @@ class UnogsExplorer:
     @property
     def country_list(self):
         country_code_list = [str(code) for code in COUNTRY_CODE_ID_MAPPING.values()]
-        return ','.join(country_code_list)
+        return ",".join(country_code_list)
 
     def search_resource(self, limit=100, offset=0):
         payload = {
@@ -125,14 +139,14 @@ class UnogsExplorer:
         explore all data on unogos website and send nf_id to SQS
         """
         # only query from first page return 'total'
-        total = self.search_resource().get('total')
+        total = self.search_resource().get("total")
         for offset in range(0, total // 100 + 1):
             time.sleep(5)
-            resources = self.search_resource(offset=offset)['results']
+            resources = self.search_resource(offset=offset)["results"]
             for resource in resources:
-                nf_id = resource.get('nfid')
+                nf_id = resource.get("nfid")
                 if nf_id:
-                    send_sqs_msg({'nf_id': nf_id})
+                    send_sqs_msg({"nf_id": nf_id})
 
 
 class UnogsStaticScraper:
@@ -142,8 +156,8 @@ class UnogsStaticScraper:
 
     def get_static_data(self):
         resp = requests.get(url=STATIC_INFO)
-        country_info_list = resp.json()['countries']['results']
-        language_static_list = resp.json()['languages']
+        country_info_list = resp.json()["countries"]["results"]
+        language_static_list = resp.json()["languages"]
         self.parse_country_info(country_info_list)
 
     @staticmethod
@@ -157,7 +171,7 @@ class UnogsStaticScraper:
         print(country_code_id_mapping)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for resource_type in [TV, MOVIE]:
         u = UnogsExplorer(resource_type)
         u.explore()

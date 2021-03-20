@@ -13,14 +13,14 @@ class S3Client(object):
 
     @property
     def client(self):
-        s3 = boto3.resource('s3', region_name=self.region)
+        s3 = boto3.resource("s3", region_name=self.region)
         return s3
 
     def create_bucket(self, bucket_name):
         bucket_response = self.client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={
-                'LocationConstraint': self.region})
+            CreateBucketConfiguration={"LocationConstraint": self.region},
+        )
         return bucket_name, bucket_response
 
     @staticmethod
@@ -33,15 +33,15 @@ class S3Client(object):
         :param index:
         :return:
         """
-        now_str = pendulum.now().format('YYYY-MM-DD')
-        return f'{country_code}/{resource_type}/{now_str}/{index}.json'
+        now_str = pendulum.now().format("YYYY-MM-DD")
+        return f"{country_code}/{resource_type}/{now_str}/{index}.json"
 
     def _build_s3_object(self, key):
         return self.client.Object(self.bucket, key)
 
     def get(self, key):
         s3_object = self._build_s3_object(key)
-        data = s3_object.get()['Body'].read()
+        data = s3_object.get()["Body"].read()
         return json.loads(data)
 
     def put(self, key, body):

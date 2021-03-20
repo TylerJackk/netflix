@@ -4,7 +4,7 @@ from chalicelib.scraper.constants import TV, MOVIE
 from chalicelib.scraper.scraper import UnogsExplorer
 from chalicelib.db_manager.constants import NF_ID_QUEUE
 
-app = Chalice(app_name='application')
+app = Chalice(app_name="application")
 app.debug = True
 
 
@@ -14,11 +14,12 @@ app.debug = True
 #         app.log.debug("Received message with contents: %s", record.body)
 
 
-@app.route('/explore', methods=['GET'])
+@app.route("/explore", methods=["GET"])
 def explore_all_nf_data():
     for resource_type in [TV, MOVIE]:
         u = UnogsExplorer(resource_type)
         u.explore()
+
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
