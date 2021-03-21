@@ -15,8 +15,8 @@ app.debug = True
 def scrape_nf_detail(event):
     for record in event:
         body = json.loads(record.body)
-        nf_id = body.get('nf_id')
-        resource_type = body.get('resource_type')
+        nf_id = body.get("nf_id")
+        resource_type = body.get("resource_type")
         scraper = UnogsScraper(nf_id)
         data = scraper.get_data()
         s3 = S3Client()
