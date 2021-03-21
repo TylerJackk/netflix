@@ -146,7 +146,7 @@ class UnogsExplorer:
             for resource in resources:
                 nf_id = resource.get("nfid")
                 if nf_id:
-                    send_sqs_msg({"nf_id": nf_id})
+                    send_sqs_msg({"nf_id": nf_id, "resource_type": self.resource_type})
 
 
 class UnogsStaticScraper:
@@ -169,10 +169,3 @@ class UnogsStaticScraper:
             country_code_id_mapping.update({info["countrycode"]: info["id"]})
         print(country_id_mapping)
         print(country_code_id_mapping)
-
-
-if __name__ == "__main__":
-    for resource_type in [TV, MOVIE]:
-        u = UnogsExplorer(resource_type)
-        u.explore()
-        # send_sqs_msg('test')

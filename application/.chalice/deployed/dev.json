@@ -7,6 +7,19 @@
       "role_name": "application-dev"
     },
     {
+      "name": "scrape_nf_detail",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-scrape_nf_detail"
+    },
+    {
+      "name": "scrape_nf_detail-sqs-event-source",
+      "resource_type": "sqs_event",
+      "queue_arn": "arn:aws:sqs:ap-east-1:026336600189:netflix-id",
+      "event_uuid": "5a6eb8f9-a479-4855-9af6-43148d7652e4",
+      "queue": "netflix-id",
+      "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-scrape_nf_detail"
+    },
+    {
       "name": "api_handler",
       "resource_type": "lambda_function",
       "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev"

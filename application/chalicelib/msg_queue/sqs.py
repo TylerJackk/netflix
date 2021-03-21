@@ -13,7 +13,3 @@ def send_sqs_msg(body):
     queue = sqs.get_queue_by_name(QueueName=NF_ID_QUEUE)
     resp = queue.send_message(MessageBody=body)
     return resp["ResponseMetadata"]["HTTPStatusCode"] == 200
-
-
-if __name__ == "__main__":
-    print(send_sqs_msg({"nf_id": 123}))

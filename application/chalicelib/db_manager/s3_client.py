@@ -1,8 +1,6 @@
-import json
-
 import boto3
 import pendulum
-
+import pickle
 from chalicelib.db_manager.constants import NF_BUCKET, REGION
 
 
@@ -24,36 +22,33 @@ class S3Client(object):
         return bucket_name, bucket_response
 
     @staticmethod
-    def build_key(country_code, resource_type, index):
+    def build_key(resource_type, nf_id):
         """
         build s3 key
-        pattern: 'UK/Movie/2021-03-18/1.json'
-        :param country_code:
+        pattern: '/Movie/2021-03-18/nf_id.json'
         :param resource_type:
-        :param index:
+        :param nf_id:
         :return:
         """
         now_str = pendulum.now().format("YYYY-MM-DD")
-        return f"{country_code}/{resource_type}/{now_str}/{index}.json"
+        return f"{resource_type}/{now_str}/{nf_id}.json"
 
     def _build_s3_object(self, key):
         return self.client.Object(self.bucket, key)
 
     def get(self, key):
         s3_object = self._build_s3_object(key)
-        data = s3_object.get()["Body"].read()
-        return json.loads(data)
+        body = s3_object.get()["Body"].read()
+        return pickle.loads(body)
 
     def put(self, key, body):
         s3_object = self._build_s3_object(key)
-        resp = s3_object.put(Body=json.dumps(body))
-        print(resp)
+        serialized_body = pickle.dumps(body)
+        resp = s3_object.put(Body=serialized_body)
+        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            return True
+        return False
 
     def delete(self, key):
         s3_object = self._build_s3_object(key)
         print(s3_object.delete())
-
-
-# if __name__ == '__main__':
-#     s3 = S3Client()
-#     s3.delete('test-123')
