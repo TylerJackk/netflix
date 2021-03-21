@@ -1,7 +1,7 @@
 import boto3
-import pendulum
 import pickle
 from chalicelib.db_manager.constants import NF_BUCKET, REGION
+from datetime import datetime
 
 
 class S3Client(object):
@@ -30,8 +30,8 @@ class S3Client(object):
         :param nf_id:
         :return:
         """
-        now_str = pendulum.now().format("YYYY-MM-DD")
-        return f"{resource_type}/{now_str}/{nf_id}.json"
+        current_date_str = datetime.now().strftime("%Y-%m-%d")
+        return f"{resource_type}/{current_date_str}/{nf_id}.json"
 
     def _build_s3_object(self, key):
         return self.client.Object(self.bucket, key)

@@ -1,9 +1,5 @@
-import time
-
 import json
 import requests
-from decimal import Decimal
-
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import (
     SEARCH,
@@ -18,9 +14,8 @@ from chalicelib.scraper.constants import (
     COUNTRIES,
     EPISODES,
     STATIC_INFO,
-    MOVIE,
-    TV,
 )
+from decimal import Decimal
 
 
 class UnogsScraper:
