@@ -1,11 +1,9 @@
 import json
-
 from chalice import Chalice
 
-from chalicelib.db_manager.s3_client import S3Client
-from chalicelib.scraper.constants import TV, MOVIE
-from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
 from chalicelib.db_manager.constants import NF_ID_QUEUE
+from chalicelib.db_manager.s3_client import S3Client
+from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
 
 app = Chalice(app_name="application")
 app.debug = True
@@ -26,6 +24,15 @@ def scrape_nf_detail(event):
 
 @app.route("/explore", methods=["GET"])
 def explore_all_nf_data():
-    for resource_type in [TV, MOVIE]:
-        u = UnogsExplorer(resource_type)
-        u.explore()
+    request = app.current_request
+    resource_type = request.query_params["resource_type"]
+    offset = int(request.query_params["offset"])
+    explorer = UnogsExplorer(resource_type)
+    success = explorer.explore(offset)
+    return {"success": success}
+
+
+@app.route("/{resource_type}/total", methods=["GET"])
+def get_resource_total(resource_type):
+    explorer = UnogsExplorer(resource_type)
+    return {"total": explorer.get_total_resource_num()}

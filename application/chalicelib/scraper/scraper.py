@@ -134,19 +134,20 @@ class UnogsExplorer:
         if response.status_code == 200:
             return response.json()
 
-    def explore(self):
+    def get_total_resource_num(self):
+        # only query from first page return 'total'
+        return self.search_resource().get("total")
+
+    def explore(self, offset):
         """
         explore all data on unogos website and send nf_id to SQS
         """
-        # only query from first page return 'total'
-        total = self.search_resource().get("total")
-        for offset in range(0, total // 100 + 1):
-            time.sleep(5)
-            resources = self.search_resource(offset=offset)["results"]
-            for resource in resources:
-                nf_id = resource.get("nfid")
-                if nf_id:
-                    send_sqs_msg({"nf_id": nf_id, "resource_type": self.resource_type})
+        resources = self.search_resource(offset=offset)["results"]
+        for resource in resources:
+            nf_id = resource.get("nfid")
+            if nf_id:
+                send_sqs_msg({"nf_id": nf_id, "resource_type": self.resource_type})
+        return True
 
 
 class UnogsStaticScraper:
