@@ -13,13 +13,15 @@ app.debug = True
 def scrape_nf_detail(event):
     for record in event:
         body = json.loads(record.body)
-        nf_id = body.get("nf_id")
+        nf_ids = body.get("nf_ids")
         resource_type = body.get("resource_type")
-        scraper = UnogsScraper(nf_id)
-        data = scraper.get_data()
+        body = {}
+        for nf_id in nf_ids:
+            scraper = UnogsScraper(nf_id)
+            body["nf_id"] = scraper.get_data()
         s3 = S3Client()
-        key = s3.build_key(resource_type, nf_id)
-        return s3.put(key, data)
+        key = s3.build_key(resource_type, f'data-{body.get("batch")}')
+        s3.put(key, body)
 
 
 @app.route("/explore", methods=["GET"])

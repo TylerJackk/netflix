@@ -22,16 +22,16 @@ class S3Client(object):
         return bucket_name, bucket_response
 
     @staticmethod
-    def build_key(resource_type, nf_id):
+    def build_key(resource_type, identifier):
         """
         build s3 key
-        pattern: '/Movie/2021-03-18/nf_id.json'
+        pattern: '/Movie/2021-03-18/identifier.json'
         :param resource_type:
-        :param nf_id:
+        :param identifier:
         :return:
         """
         current_date_str = datetime.now().strftime("%Y-%m-%d")
-        return f"{resource_type}/{current_date_str}/{nf_id}.json"
+        return f"{resource_type}/{current_date_str}/{identifier}.json"
 
     def _build_s3_object(self, key):
         return self.client.Object(self.bucket, key)

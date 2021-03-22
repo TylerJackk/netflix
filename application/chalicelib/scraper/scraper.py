@@ -135,13 +135,13 @@ class UnogsExplorer:
 
     def explore(self, offset):
         """
-        explore all data on unogos website and send nf_id to SQS
+        explore all data on unogos website and send nf_ids to SQS
         """
         resources = self.search_resource(offset=offset)["results"]
-        for resource in resources:
-            nf_id = resource.get("nfid")
-            if nf_id:
-                send_sqs_msg({"nf_id": nf_id, "resource_type": self.resource_type})
+        nf_ids = [resource.get("nfid") for resource in resources]
+        send_sqs_msg(
+            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type}
+        )
         return True
 
 
