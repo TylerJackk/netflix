@@ -20,11 +20,11 @@ def scrape_nf_detail(event):
         s3_data = {}
         for nf_id in nf_ids:
             scraper = UnogsScraper(nf_id)
-            s3_data["nf_id"] = scraper.get_data()
+            s3_data[nf_id] = scraper.get_data()
         s3 = S3Client()
-        key = s3.build_key(resource_type, f'data-{batch}')
+        key = s3.build_key(resource_type, f"data-{batch}")
         s3.put(key, s3_data)
-        message = f'{resource_type} data(batch {batch}) saved to S3'
+        message = f"{resource_type} data(batch {batch}) saved to S3"
         send_ifttt(message)
 
 
@@ -33,8 +33,9 @@ def explore_all_nf_data():
     request = app.current_request
     resource_type = request.query_params["resource_type"]
     offset = int(request.query_params["offset"])
+    limit = int(request.query_params["limit"])
     explorer = UnogsExplorer(resource_type)
-    success = explorer.explore(offset)
+    success = explorer.explore(limit, offset)
     return {"success": success}
 
 
