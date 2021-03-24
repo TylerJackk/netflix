@@ -144,6 +144,40 @@ class UnogsExplorer:
         )
         return True
 
+    def search_new_resource(self, limit=20, offset=0):
+        """
+        explore new data(last 24 hours) on unogos and send nf_ids to SQS
+        """
+        payload = {
+            "limit": limit,
+            "offset": offset,
+            "query": "new+last+24+hours",
+            "countrylist": "",
+            "country_andorunique": "",
+            "start_year": "",
+            "end_year": "",
+            "start_rating": "",
+            "end_rating": "",
+            "genrelist": "",
+            "type": self.resource_type,
+            "audio": "",
+            "subtitle": "",
+            "audiosubtitle_andor": "",
+            "person": "",
+            "filterby": "",
+            "orderby": "",
+        }
+        response = requests.get(url=SEARCH, headers=HEADERS, params=payload).json()
+        total = response['total']
+        if not total:
+            return
+        resources = response['results']
+        nf_ids = [resource.get("nfid") for resource in resources]
+        send_sqs_msg(
+            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type}
+        )
+        return True
+
 
 class UnogsStaticScraper:
     """
@@ -165,3 +199,8 @@ class UnogsStaticScraper:
             country_code_id_mapping.update({info["countrycode"]: info["id"]})
         print(country_id_mapping)
         print(country_code_id_mapping)
+
+
+if __name__ == '__main__':
+    u = UnogsExplorer('test')
+    u.search_new_resource()
