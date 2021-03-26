@@ -33,7 +33,8 @@ HEADERS = {
     "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7",
     "cookie": "eucookie=stupideulaw; _ga=GA1.2.474332190.1597031572; countrylist=78; _gid=GA1.2.344253278.1597237206; authtoken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTcyMzcyMDYsIm5iZiI6MTU5NzIzNzIwNiwianRpIjoiYTM5MTk2MjAtNDgyOS00OGEzLWI3ZjItYWQwYmU0ODdiOGY3IiwiZXhwIjoxNTk3MzIzNjA2LCJpZGVudGl0eSI6IjE1OTcyMzcyMDYuNjMzIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.n3CkmoEktw30fyqxOtWuiE1BD4SHT5fjKpQ-qSjcTi4",
 }
-
+DAILY_SCRAPE = 'daily_scrape'
+HISTORICAL_SCRAPE = 'historical_scrape'
 
 HOT_COUNTRY = ["Japan ", "Hong Kong ", "United States", "Singapore "]
 

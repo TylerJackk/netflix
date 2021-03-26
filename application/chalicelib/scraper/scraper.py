@@ -13,7 +13,7 @@ from chalicelib.scraper.constants import (
     CREATOR,
     COUNTRIES,
     EPISODES,
-    STATIC_INFO,
+    STATIC_INFO, DAILY_SCRAPE, HISTORICAL_SCRAPE,
 )
 from decimal import Decimal
 
@@ -140,7 +140,7 @@ class UnogsExplorer:
         resources = self.search_resource(limit=limit, offset=offset)["results"]
         nf_ids = [resource.get("nfid") for resource in resources]
         send_sqs_msg(
-            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type}
+            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type, 'scrape_type': HISTORICAL_SCRAPE}
         )
         return True
 
@@ -174,7 +174,7 @@ class UnogsExplorer:
         resources = response['results']
         nf_ids = [resource.get("nfid") for resource in resources]
         send_sqs_msg(
-            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type}
+            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type, 'scrape_type': DAILY_SCRAPE}
         )
         return True
 
@@ -199,8 +199,3 @@ class UnogsStaticScraper:
             country_code_id_mapping.update({info["countrycode"]: info["id"]})
         print(country_id_mapping)
         print(country_code_id_mapping)
-
-
-if __name__ == '__main__':
-    u = UnogsExplorer('test')
-    u.search_new_resource()

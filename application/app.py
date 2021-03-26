@@ -1,9 +1,10 @@
 import json
-from chalice import Chalice
+from chalice import Chalice, Rate
 
 from chalicelib.helper.send_notification import send_ifttt
 from chalicelib.db_manager.constants import NF_ID_QUEUE
 from chalicelib.db_manager.s3_client import S3Client
+from chalicelib.scraper.constants import MOVIE, TV
 from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
 
 app = Chalice(app_name="application")
@@ -17,15 +18,17 @@ def scrape_nf_detail(event):
         nf_ids = body.get("nf_ids")
         resource_type = body.get("resource_type")
         batch = body.get("batch")
+        scrape_type = body.get("scrape_type")
         s3_data = {}
         for nf_id in nf_ids:
             scraper = UnogsScraper(nf_id)
             s3_data[nf_id] = scraper.get_data()
         s3 = S3Client()
-        key = s3.build_key(resource_type, f"data-{batch}")
+        # todo decouple s3 key and notification msg
+        identifier = f"{scrape_type}_data-{batch}"
+        key = s3.build_key(resource_type, identifier)
         s3.put(key, s3_data)
-        message = f"{resource_type} data(batch {batch}) saved to S3"
-        send_ifttt(message)
+        send_ifttt(f"{resource_type} {identifier} saved to S3")
 
 
 @app.route("/explore", methods=["GET"])
@@ -43,3 +46,10 @@ def explore_all_nf_data():
 def get_resource_total(resource_type):
     explorer = UnogsExplorer(resource_type)
     return {"total": explorer.get_total_resource_num()}
+
+
+@app.schedule(Rate(1, unit=Rate.DAYS))
+def explore_daily_new_resource(event):
+    for resource_type in [TV, MOVIE]:
+        explorer = UnogsExplorer(resource_type)
+        explorer.search_new_resource()
