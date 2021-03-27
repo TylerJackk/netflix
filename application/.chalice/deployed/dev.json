@@ -20,6 +20,16 @@
       "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-scrape_nf_detail"
     },
     {
+      "name": "explore_daily_new_resource",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-explore_daily_new_resource"
+    },
+    {
+      "name": "explore_daily_new_resource-event",
+      "resource_type": "cloudwatch_event",
+      "rule_name": "application-dev-explore_daily_new_resource-event"
+    },
+    {
       "name": "api_handler",
       "resource_type": "lambda_function",
       "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev"
