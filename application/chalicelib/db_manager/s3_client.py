@@ -5,8 +5,8 @@ from datetime import datetime
 
 
 class S3Client(object):
-    def __init__(self, bucket=NF_BUCKET, region=REGION):
-        self.bucket = bucket
+    def __init__(self, bucket_name=NF_BUCKET, region=REGION):
+        self.bucket_name = bucket_name
         self.region = region
 
     @property
@@ -34,7 +34,12 @@ class S3Client(object):
         return f"{resource_type}/{current_date_str}/{identifier}.json"
 
     def _build_s3_object(self, key):
-        return self.client.Object(self.bucket, key)
+        return self.client.Object(self.bucket_name, key)
+
+    def listing_objects_key(self, resource_type):
+        bucket = self.client.Bucket(self.bucket_name)
+        for obj in bucket.objects.filter(Prefix=resource_type):
+            print(obj.key)
 
     def get(self, key):
         s3_object = self._build_s3_object(key)
