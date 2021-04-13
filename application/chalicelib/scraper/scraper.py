@@ -13,7 +13,9 @@ from chalicelib.scraper.constants import (
     CREATOR,
     COUNTRIES,
     EPISODES,
-    STATIC_INFO, DAILY_SCRAPE, HISTORICAL_SCRAPE,
+    STATIC_INFO,
+    DAILY_SCRAPE,
+    HISTORICAL_SCRAPE,
 )
 from decimal import Decimal
 
@@ -140,7 +142,12 @@ class UnogsExplorer:
         resources = self.search_resource(limit=limit, offset=offset)["results"]
         nf_ids = [resource.get("nfid") for resource in resources]
         send_sqs_msg(
-            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type, 'scrape_type': HISTORICAL_SCRAPE}
+            {
+                "batch": offset,
+                "nf_ids": nf_ids,
+                "resource_type": self.resource_type,
+                "scrape_type": HISTORICAL_SCRAPE,
+            }
         )
         return True
 
@@ -168,13 +175,18 @@ class UnogsExplorer:
             "orderby": "",
         }
         response = requests.get(url=SEARCH, headers=HEADERS, params=payload).json()
-        total = response['total']
+        total = response["total"]
         if not total:
             return
-        resources = response['results']
+        resources = response["results"]
         nf_ids = [resource.get("nfid") for resource in resources]
         send_sqs_msg(
-            {"batch": offset, "nf_ids": nf_ids, "resource_type": self.resource_type, 'scrape_type': DAILY_SCRAPE}
+            {
+                "batch": offset,
+                "nf_ids": nf_ids,
+                "resource_type": self.resource_type,
+                "scrape_type": DAILY_SCRAPE,
+            }
         )
         return True
 
