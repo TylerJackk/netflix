@@ -14,9 +14,7 @@ def setup():
 
 class Converter(object):
     """
-    Extract raw data from S3
     Transform raw data to ES format
-    Load data to ES
     """
 
     def __init__(self, resource_type):
@@ -97,13 +95,16 @@ class Converter(object):
         return es_data
 
 
-def etl(raw_data, resource_type):
+def do_etl(s3_key, resource_type):
+    """
+    Extract raw data from S3
+    Transform raw data to ES format
+    Load data to ES
+    """
     s3 = S3Client()
     es = ESClient()
-    # s3.client.Bucket(s3.bucket).objects.all()
     convert = Converter(resource_type)
-    key = "movie/2021-03-23/data-0.json"
-    raw_data = s3.get(key)
+    raw_data = s3.get(s3_key)
     for _id, resource in raw_data.items():
         es_data = convert.build_es_data(resource)
         es.put(es.movie_index, es_data)
@@ -111,4 +112,4 @@ def etl(raw_data, resource_type):
 
 if __name__ == "__main__":
     # setup()
-    etl([], "movie")
+    do_etl([], "movie")
