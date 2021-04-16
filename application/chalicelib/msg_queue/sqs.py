@@ -4,7 +4,7 @@ import json
 from chalicelib.db_manager.constants import REGION, NF_ID_QUEUE
 
 
-def send_sqs_msg(body):
+def send_sqs_msg(queue_name, body):
     """
     send message to AWS SQS
     """

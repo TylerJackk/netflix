@@ -59,10 +59,11 @@ def trigger_etl_job():
     object_key_list = s3.get_object_key_list(resource_type)
     for chunk in chunks(object_key_list, 10):
         send_sqs_msg(
-            {
+            queue_name=NF_ETL_QUEUE,
+            body={
                 "s3_paths": chunk,
                 "resource_type": resource_type,
-            }
+            },
         )
 
 
@@ -73,7 +74,7 @@ def get_resource_total(resource_type):
 
 
 # Run at 10:00am (UTC) every day.
-@app.schedule(Cron(0, 8, '*', '*', '?', '*'))
+@app.schedule(Cron(0, 8, "*", "*", "?", "*"))
 def explore_daily_new_resource():
     for resource_type in [TV, MOVIE]:
         explorer = UnogsExplorer(resource_type)

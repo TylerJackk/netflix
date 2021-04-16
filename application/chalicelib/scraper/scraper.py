@@ -1,5 +1,7 @@
 import json
 import requests
+
+from chalicelib.db_manager.constants import NF_ID_QUEUE
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import (
     SEARCH,
@@ -181,12 +183,13 @@ class UnogsExplorer:
         resources = response["results"]
         nf_ids = [resource.get("nfid") for resource in resources]
         send_sqs_msg(
-            {
+            queue_name=NF_ID_QUEUE,
+            body={
                 "batch": offset,
                 "nf_ids": nf_ids,
                 "resource_type": self.resource_type,
                 "scrape_type": DAILY_SCRAPE,
-            }
+            },
         )
         return True
 
