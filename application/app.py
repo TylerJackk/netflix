@@ -5,8 +5,10 @@ from chalicelib.etl.converter import do_etl
 from chalicelib.helper.send_notification import send_ifttt
 from chalicelib.db_manager.constants import NF_ID_QUEUE, NF_ETL_QUEUE
 from chalicelib.db_manager.s3_client import S3Client
+from chalicelib.helper.utils import chunks
 from chalicelib.scraper.constants import MOVIE, TV
 from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
+from chalicelib.msg_queue.sqs import send_sqs_msg
 
 app = Chalice(app_name="application")
 app.debug = True
@@ -49,12 +51,29 @@ def explore_all_nf_data():
     return {"success": success}
 
 
+@app.route("/etl", methods=["GET"])
+def trigger_etl_job():
+    request = app.current_request
+    resource_type = request.query_params["resource_type"]
+    s3 = S3Client()
+    object_key_list = s3.get_object_key_list(resource_type)
+    for chunk in chunks(object_key_list, 10):
+        send_sqs_msg(
+            {
+                "s3_paths": chunk,
+                "resource_type": resource_type,
+            }
+        )
+
+
 @app.route("/{resource_type}/total", methods=["GET"])
 def get_resource_total(resource_type):
     explorer = UnogsExplorer(resource_type)
     return {"total": explorer.get_total_resource_num()}
 
 
+# todo refactor to corntab format for readability
+# now execute every day on 19:30 GMT
 @app.schedule(Rate(1, unit=Rate.DAYS))
 def explore_daily_new_resource():
     for resource_type in [TV, MOVIE]:
@@ -67,14 +86,11 @@ def etl(event):
     """
     triggered by sqs event, convert S3 raw data and load to ES
     """
-    # a = {
-    #     "s3_paths": ['2021-03-23/data-0.json'],
-    #     "resource_type": 'movie'
-    # }
     for record in event:
         body = json.loads(record.body)
-        resource_type = body.get('resource_type')
-        s3_paths = body.get('s3_paths')
+        resource_type = body.get("resource_type")
+        s3_paths = body.get("s3_paths")
         for s3_path in s3_paths:
-            s3_key = f'{resource_type}/{s3_path}'
+            s3_key = f"{resource_type}/{s3_path}"
             do_etl(resource_type, s3_key)
+            send_ifttt(f"{s3_key} loaded to ES")
