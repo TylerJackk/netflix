@@ -1,5 +1,5 @@
 import json
-from chalice import Chalice, Rate
+from chalice import Chalice, Rate, Cron
 
 from chalicelib.etl.converter import do_etl
 from chalicelib.helper.send_notification import send_ifttt
@@ -72,9 +72,8 @@ def get_resource_total(resource_type):
     return {"total": explorer.get_total_resource_num()}
 
 
-# todo refactor to corntab format for readability
-# now execute every day on 19:30 GMT
-@app.schedule(Rate(1, unit=Rate.DAYS))
+# Run at 10:00am (UTC) every day.
+@app.schedule(Cron(0, 8, '*', '*', '?', '*'))
 def explore_daily_new_resource():
     for resource_type in [TV, MOVIE]:
         explorer = UnogsExplorer(resource_type)
