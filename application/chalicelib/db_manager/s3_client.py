@@ -36,10 +36,9 @@ class S3Client(object):
     def _build_s3_object(self, key):
         return self.client.Object(self.bucket_name, key)
 
-    def listing_objects_key(self, resource_type):
+    def get_object_key_list(self, resource_type):
         bucket = self.client.Bucket(self.bucket_name)
-        for obj in bucket.objects.filter(Prefix=resource_type):
-            print(obj.key)
+        return [obj.key for obj in bucket.objects.filter(Prefix=resource_type)]
 
     def get(self, key):
         s3_object = self._build_s3_object(key)

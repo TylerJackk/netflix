@@ -5,9 +5,12 @@ from chalicelib.db_manager.s3_client import S3Client
 from chalicelib.helper.tmdb import TMDBClient
 
 
-def setup():
+def setup(rebuild_index=False):
     es = ESClient()
     es.put_template()
+    if rebuild_index:
+        es.delete_index(es.tv_index)
+        es.delete_index(es.movie_index)
     es.create_index(es.tv_index)
     es.create_index(es.movie_index)
 
@@ -111,5 +114,5 @@ def do_etl(s3_key, resource_type):
 
 
 if __name__ == "__main__":
-    # setup()
-    do_etl([], "movie")
+    setup(rebuild_index=True)
+    # do_etl([], "movie")
