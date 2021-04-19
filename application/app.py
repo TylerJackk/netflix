@@ -91,6 +91,5 @@ def etl(event):
         resource_type = body.get("resource_type")
         s3_paths = body.get("s3_paths")
         for s3_path in s3_paths:
-            s3_key = f"{resource_type}/{s3_path}"
-            do_etl(resource_type, s3_key)
-            send_ifttt(f"{s3_key} loaded to ES")
+            do_etl(s3_path, resource_type)
+            send_ifttt(f"{s3_path} loaded to ES")

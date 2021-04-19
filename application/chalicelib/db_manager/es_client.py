@@ -1,6 +1,8 @@
-from elasticsearch import Elasticsearch
+import boto3
+from elasticsearch import Elasticsearch, RequestsHttpConnection
+from requests_aws4auth import AWS4Auth
 
-from chalicelib.db_manager.constants import ES_HOST, ES_TEMPLATE_PREFIX
+from chalicelib.db_manager.constants import ES_HOST, ES_TEMPLATE_PREFIX, ES_REGION
 from chalicelib.db_manager.es_template import TEMPLATE
 from chalicelib.scraper.constants import MOVIE, TV
 
@@ -11,10 +13,36 @@ class ESConnection(object):
 
     def get_conn(self):
         if self._conn is None:
-            self._conn = self._get_conn()
+            self._conn = self._get_conn_by_boto()
+        return self._conn
+
+    def _get_conn_by_boto(self):
+        """
+        get es connection by boto(AWS specific)
+        """
+        service = "es"
+        credentials = boto3.Session().get_credentials()
+        aws_auth = AWS4Auth(
+            credentials.access_key,
+            credentials.secret_key,
+            ES_REGION,
+            service,
+            session_token=credentials.token,
+        )
+        self._conn = Elasticsearch(
+            hosts=[{"host": ES_HOST, "port": 443}],
+            http_auth=aws_auth,
+            use_ssl=True,
+            verify_certs=True,
+            connection_class=RequestsHttpConnection,
+        )
         return self._conn
 
     def _get_conn(self):
+        """
+        common way to get es connection
+        :return:
+        """
         self._conn = Elasticsearch(
             hosts=[ES_HOST],
             scheme="https",

@@ -10,6 +10,6 @@ def send_sqs_msg(queue_name, body):
     """
     body = json.dumps(body)
     sqs = boto3.resource("sqs", region_name=REGION)
-    queue = sqs.get_queue_by_name(QueueName=NF_ID_QUEUE)
+    queue = sqs.get_queue_by_name(QueueName=queue_name)
     resp = queue.send_message(MessageBody=body)
     return resp["ResponseMetadata"]["HTTPStatusCode"] == 200

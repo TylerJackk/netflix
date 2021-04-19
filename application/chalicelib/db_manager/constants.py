@@ -4,8 +4,12 @@ REGION = "ap-east-1"
 NF_BUCKET = "netflix-raw-data"
 
 # ========== ES settings ====
-ES_HOST = "https://search-netflix-data-zp4wrfi3rxyj55kxpc2ssurfqu.ap-southeast-1.es.amazonaws.com/"
+ES_HOST = (
+    "search-netflix-data-zp4wrfi3rxyj55kxpc2ssurfqu.ap-southeast-1.es.amazonaws.com"
+)
 ES_TEMPLATE_PREFIX = "netflix-v1-resource"
+ES_REGION = "ap-southeast-1"
+ES_DOMAIN_NAME = "netflix-data"
 
 # ========== SQS settings ====
 NF_ID_QUEUE = "netflix-id"
