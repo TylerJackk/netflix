@@ -1,14 +1,14 @@
 import json
-from chalice import Chalice, Rate, Cron
+from chalice import Chalice, Cron
 
-from chalicelib.etl.converter import do_etl
-from chalicelib.helper.send_notification import send_ifttt
 from chalicelib.db_manager.constants import NF_ID_QUEUE, NF_ETL_QUEUE
 from chalicelib.db_manager.s3_client import S3Client
+from chalicelib.etl.converter import do_etl
+from chalicelib.helper.send_notification import send_ifttt
 from chalicelib.helper.utils import chunks
+from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import MOVIE, TV
 from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
-from chalicelib.msg_queue.sqs import send_sqs_msg
 
 app = Chalice(app_name="application")
 app.debug = True
@@ -35,6 +35,13 @@ def scrape_nf_detail(event):
         key = s3.build_key(resource_type, identifier)
         s3.put(key, s3_data)
         send_ifttt(f"{resource_type} {identifier} saved to S3")
+        send_sqs_msg(
+            queue_name=NF_ETL_QUEUE,
+            body={
+                "s3_paths": [key],
+                "resource_type": resource_type,
+            },
+        )
 
 
 @app.route("/explore", methods=["GET"])
