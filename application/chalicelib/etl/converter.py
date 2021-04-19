@@ -1,18 +1,19 @@
 from datetime import datetime
 
 from chalicelib.db_manager.es_client import ESClient
+from chalicelib.db_manager.es_mapping import ES_MAPPING
 from chalicelib.db_manager.s3_client import S3Client
 from chalicelib.helper.tmdb import TMDBClient
+from chalicelib.scraper.constants import TV, MOVIE
 
 
 def setup(rebuild_index=False):
     es = ESClient()
-    es.put_template()
     if rebuild_index:
         es.delete_index(es.tv_index)
         es.delete_index(es.movie_index)
-    es.create_index(es.tv_index)
-    es.create_index(es.movie_index)
+    es.create_index(es.tv_index, ES_MAPPING['series'])
+    es.create_index(es.movie_index, ES_MAPPING['movie'])
 
 
 class Converter(object):
@@ -106,13 +107,12 @@ def do_etl(s3_key, resource_type):
     """
     s3 = S3Client()
     es = ESClient()
+    es_resource_index_mapping = {
+        TV: es.tv_index,
+        MOVIE: es.movie_index
+    }
     convert = Converter(resource_type)
     raw_data = s3.get(s3_key)
     for _id, resource in raw_data.items():
         es_data = convert.build_es_data(resource)
-        es.put(es.movie_index, es_data)
-
-
-if __name__ == "__main__":
-    setup(rebuild_index=True)
-    # do_etl([], "movie")
+        es.put(es_resource_index_mapping[resource_type], es_data)

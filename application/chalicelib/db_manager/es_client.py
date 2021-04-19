@@ -3,7 +3,6 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 
 from chalicelib.db_manager.constants import ES_HOST, ES_TEMPLATE_PREFIX, ES_REGION
-from chalicelib.db_manager.es_template import TEMPLATE
 from chalicelib.scraper.constants import MOVIE, TV
 
 
@@ -63,15 +62,9 @@ class ESClient(object):
     def tv_index(self):
         return f"{ES_TEMPLATE_PREFIX}-{TV}"
 
-    def create_index(self, index_name):
+    def create_index(self, index_name, body=None):
         if not self.es.indices.exists(index_name):
-            self.es.indices.create(index_name)
-
-    def put_template(self):
-        for template_name, template in TEMPLATE.items():
-            if self.es.indices.exists_template(template_name):
-                self.es.indices.delete_template(template_name)
-            self.es.indices.put_template(name=template_name, body=template)
+            self.es.indices.create(index_name, body=body)
 
     def delete_index(self, index_name):
         self.es.indices.delete(index_name)
@@ -81,7 +74,7 @@ class ESClient(object):
         body = data["body"]
         self.es.index(index_name, body=body, id=nf_id)
 
-    def search(self, index, body, routing, ignore_unavailable=True):
+    def search(self, index, body, routing=None, ignore_unavailable=True):
         res = self.es.search(
             index=index,
             body=body,
