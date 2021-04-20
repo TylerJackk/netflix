@@ -11,7 +11,13 @@ def test_scrape_detail():
             "scrape_nf_detail",
             client.events.generate_sqs_event(
                 message_bodies=[
-                    json.dumps({"nf_id": 81422699, "resource_type": "movie"})
+                    json.dumps(
+                        {
+                            "resource_type": "movie",
+                            "batch": 1,
+                            "nf_ids": [81422699] * 50,
+                        }
+                    )
                 ],
                 queue_name=NF_ID_QUEUE,
             ),

@@ -1,5 +1,7 @@
 import json
 import requests
+
+from chalicelib.db_manager.constants import NF_ID_QUEUE
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import (
     SEARCH,
@@ -14,6 +16,8 @@ from chalicelib.scraper.constants import (
     COUNTRIES,
     EPISODES,
     STATIC_INFO,
+    DAILY_SCRAPE,
+    HISTORICAL_SCRAPE,
 )
 from decimal import Decimal
 
@@ -133,15 +137,60 @@ class UnogsExplorer:
         # only query from first page return 'total'
         return self.search_resource().get("total")
 
-    def explore(self, offset):
+    def explore(self, limit, offset):
         """
-        explore all data on unogos website and send nf_id to SQS
+        explore all data on unogos website and send nf_ids to SQS
         """
-        resources = self.search_resource(offset=offset)["results"]
-        for resource in resources:
-            nf_id = resource.get("nfid")
-            if nf_id:
-                send_sqs_msg({"nf_id": nf_id, "resource_type": self.resource_type})
+        resources = self.search_resource(limit=limit, offset=offset)["results"]
+        nf_ids = [resource.get("nfid") for resource in resources]
+        send_sqs_msg(
+            {
+                "batch": offset,
+                "nf_ids": nf_ids,
+                "resource_type": self.resource_type,
+                "scrape_type": HISTORICAL_SCRAPE,
+            }
+        )
+        return True
+
+    def search_new_resource(self, limit=20, offset=0):
+        """
+        explore new data(last 24 hours) on unogos and send nf_ids to SQS
+        """
+        payload = {
+            "limit": limit,
+            "offset": offset,
+            "query": "new+last+24+hours",
+            "countrylist": "",
+            "country_andorunique": "",
+            "start_year": "",
+            "end_year": "",
+            "start_rating": "",
+            "end_rating": "",
+            "genrelist": "",
+            "type": self.resource_type,
+            "audio": "",
+            "subtitle": "",
+            "audiosubtitle_andor": "",
+            "person": "",
+            "filterby": "",
+            "orderby": "",
+        }
+        response = requests.get(url=SEARCH, headers=HEADERS, params=payload).json()
+        total = response["total"]
+        if not total:
+            return
+        resources = response["results"]
+        nf_ids = [resource.get("nfid") for resource in resources]
+        send_sqs_msg(
+            queue_name=NF_ID_QUEUE,
+            body={
+                "batch": offset,
+                "nf_ids": nf_ids,
+                "resource_type": self.resource_type,
+                "scrape_type": DAILY_SCRAPE,
+            },
+        )
         return True
 
 

@@ -5,8 +5,8 @@ from datetime import datetime
 
 
 class S3Client(object):
-    def __init__(self, bucket=NF_BUCKET, region=REGION):
-        self.bucket = bucket
+    def __init__(self, bucket_name=NF_BUCKET, region=REGION):
+        self.bucket_name = bucket_name
         self.region = region
 
     @property
@@ -22,19 +22,23 @@ class S3Client(object):
         return bucket_name, bucket_response
 
     @staticmethod
-    def build_key(resource_type, nf_id):
+    def build_key(resource_type, identifier):
         """
         build s3 key
-        pattern: '/Movie/2021-03-18/nf_id.json'
+        pattern: '/Movie/2021-03-18/identifier.json'
         :param resource_type:
-        :param nf_id:
+        :param identifier:
         :return:
         """
         current_date_str = datetime.now().strftime("%Y-%m-%d")
-        return f"{resource_type}/{current_date_str}/{nf_id}.json"
+        return f"{resource_type}/{current_date_str}/{identifier}.json"
 
     def _build_s3_object(self, key):
-        return self.client.Object(self.bucket, key)
+        return self.client.Object(self.bucket_name, key)
+
+    def get_object_key_list(self, resource_type):
+        bucket = self.client.Bucket(self.bucket_name)
+        return [obj.key for obj in bucket.objects.filter(Prefix=resource_type)]
 
     def get(self, key):
         s3_object = self._build_s3_object(key)
