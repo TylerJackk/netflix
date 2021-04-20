@@ -12,8 +12,8 @@ def setup(rebuild_index=False):
     if rebuild_index:
         es.delete_index(es.tv_index)
         es.delete_index(es.movie_index)
-    es.create_index(es.tv_index, ES_MAPPING['series'])
-    es.create_index(es.movie_index, ES_MAPPING['movie'])
+    es.create_index(es.tv_index, ES_MAPPING["series"])
+    es.create_index(es.movie_index, ES_MAPPING["movie"])
 
 
 class Converter(object):
@@ -107,10 +107,7 @@ def do_etl(s3_key, resource_type):
     """
     s3 = S3Client()
     es = ESClient()
-    es_resource_index_mapping = {
-        TV: es.tv_index,
-        MOVIE: es.movie_index
-    }
+    es_resource_index_mapping = {TV: es.tv_index, MOVIE: es.movie_index}
     convert = Converter(resource_type)
     raw_data = s3.get(s3_key)
     for _id, resource in raw_data.items():
