@@ -80,9 +80,9 @@ def get_resource_total(resource_type):
     return {"total": explorer.get_total_resource_num()}
 
 
-# Run at 10:00am (UTC) every day.
+# Run at 16:00(GMT) every day.
 @app.schedule(Cron(0, 8, "*", "*", "?", "*"))
-def explore_daily_new_resource():
+def explore_daily_new_resource(event):
     for resource_type in [TV, MOVIE]:
         explorer = UnogsExplorer(resource_type)
         explorer.search_new_resource()
