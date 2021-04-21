@@ -100,3 +100,14 @@ def etl(event):
         for s3_path in s3_paths:
             do_etl(s3_path, resource_type)
             send_ifttt(f"{s3_path} loaded to ES")
+
+
+# ============== pure lambda function ===========
+# Some pure lambda function,
+@app.lambda_function()
+def daily_explore_fix(event, context):
+    last_hours = 96
+    for resource_type in [TV, MOVIE]:
+        explorer = UnogsExplorer(resource_type)
+        explorer.search_new_resource(last_hours=last_hours)
+        app.log.debug(f'{resource_type} fix explore triggered')

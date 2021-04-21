@@ -153,14 +153,14 @@ class UnogsExplorer:
         )
         return True
 
-    def search_new_resource(self, limit=20, offset=0):
+    def search_new_resource(self, limit=20, offset=0, last_hours=24):
         """
-        explore new data(last 24 hours) on unogos and send nf_ids to SQS
+        explore new data(default last 24 hours) on unogos and send nf_ids to SQS
         """
         payload = {
             "limit": limit,
             "offset": offset,
-            "query": "new+last+24+hours",
+            "query": f"new+last+{last_hours}+hours",
             "countrylist": "",
             "country_andorunique": "",
             "start_year": "",
