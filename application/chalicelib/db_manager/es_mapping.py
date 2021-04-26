@@ -57,7 +57,23 @@ ES_MAPPING = {
                         "subtitle": {"type": "keyword"},
                     },
                 },
-                "season_info": {"type": "nested"},
+                "season_info": {
+                    "type": "nested",
+                    "properties": {
+                        "season": "integer",
+                        "episodes": {
+                            "type": "nested",
+                            "properties": {
+                                "ep_id": "integer",
+                                "ep_num": "integer",
+                                "season": "integer",
+                                "synopsis": "keyword",
+                                "title": "text",
+                                "img": "keyword",
+                            },
+                        },
+                    },
+                },
                 "created_time": {"type": "date"},
             },
         }
