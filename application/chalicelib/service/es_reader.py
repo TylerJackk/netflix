@@ -38,13 +38,10 @@ class ESReader(object):
         if not self.param.subtitles:
             return
         should_clause = [
-            {"match": {"country_info.subtitle": subtitle}} for subtitle in self.param.subtitles
+            {"match": {"country_info.subtitle": subtitle}}
+            for subtitle in self.param.subtitles
         ]
-        query_clause = {
-            "bool": {
-                "should": should_clause
-            }
-        }
+        query_clause = {"bool": {"should": should_clause}}
         return query_clause
 
     def _build_resource_type_query(self):
@@ -79,7 +76,7 @@ class ESReader(object):
                     "bool": {
                         "must": [
                             self._build_country_code_query(),
-                            self._build_subtitle_query()
+                            self._build_subtitle_query(),
                         ],
                     }
                 },
@@ -89,10 +86,12 @@ class ESReader(object):
 
     @staticmethod
     def clean_up_empty_filter(query):
-        query['query']['bool']['filter'] = [
+        query["query"]["bool"]["filter"] = [
             item for item in query["query"]["bool"]["filter"] if item
         ]
-        query['query']['bool']['must'] = [item for item in query["query"]["bool"]["must"] if item]
+        query["query"]["bool"]["must"] = [
+            item for item in query["query"]["bool"]["must"] if item
+        ]
         return query
 
     def build_query(self):
@@ -105,11 +104,11 @@ class ESReader(object):
                 "bool": {
                     "filter": [
                         self._build_resource_type_query(),
-                        self._build_date_query()
+                        self._build_date_query(),
                     ],
                     "must": [
                         {"match": {"title": self.param.title}},
-                        self._build_nested_query()
+                        self._build_nested_query(),
                     ],
                 },
             },
@@ -140,9 +139,3 @@ class ESParameter:
     end_date: str = None
     country_code: str = None
     subtitles: list = None
-
-
-if __name__ == "__main__":
-    es_param = ESParameter(title='mank')
-    reader = ESReader(es_param)
-    reader.search()
