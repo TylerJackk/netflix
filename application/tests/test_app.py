@@ -36,3 +36,16 @@ def test_get_resource_total():
     with Client(app) as client:
         response = client.http.get(f"/{resource_type}/total")
         assert response.json_body.get("total") != None
+
+
+def test_search():
+    with Client(app) as client:
+        response = client.http.get("/search?title=mank")
+        import ipdb
+
+        ipdb.set_trace()
+        print(response)
+
+
+if __name__ == "__main__":
+    test_search()

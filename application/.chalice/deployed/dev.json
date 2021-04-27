@@ -7,6 +7,11 @@
       "role_name": "application-dev"
     },
     {
+      "name": "daily_explore_fix",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-daily_explore_fix"
+    },
+    {
       "name": "scrape_nf_detail",
       "resource_type": "lambda_function",
       "lambda_arn": "arn:aws:lambda:ap-east-1:026336600189:function:application-dev-scrape_nf_detail"

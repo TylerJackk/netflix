@@ -1,4 +1,5 @@
 import json
+from cerberus import Validator
 from chalice import Chalice, Cron
 
 from chalicelib.db_manager.constants import NF_ID_QUEUE, NF_ETL_QUEUE
@@ -9,9 +10,43 @@ from chalicelib.helper.utils import chunks
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import MOVIE, TV
 from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
+from chalicelib.service.es_reader import ESParameter
+from chalicelib.service.nf_reader import NFReader
 
 app = Chalice(app_name="application")
 app.debug = True
+
+
+# ============== API ===========
+@app.route("/search", methods=["GET"])
+def search():
+    schema = {
+        "title": {
+            "type": "string",
+            "minlength": 1,
+            "maxlength": 20,
+            "empty": False,
+            "required": True,
+        },
+        "resource_type": {"type": "string", "allowed": [TV, MOVIE], "required": False},
+        "country_code": {"type": "string"},
+    }
+    v = Validator(schema)
+    request = app.current_request
+    params = dict(request.query_params)
+    if not v.validate(params, schema):
+        return
+    es_param = ESParameter(
+        title=params["title"],
+        resource_type=params.get("resource_type"),
+        country_code=params.get("country_code"),
+    )
+    nf_reader = NFReader(es_param)
+    result = nf_reader.build_response()
+    return {"result": result}
+
+
+# ============== Scraping and ETL ===========
 
 
 @app.on_sqs_message(queue=NF_ID_QUEUE, batch_size=1)
@@ -100,3 +135,14 @@ def etl(event):
         for s3_path in s3_paths:
             do_etl(s3_path, resource_type)
             send_ifttt(f"{s3_path} loaded to ES")
+
+
+# ============== pure lambda function ===========
+# Some pure lambda function,
+@app.lambda_function()
+def daily_explore_fix(event, context):
+    last_hours = 96
+    for resource_type in [TV, MOVIE]:
+        explorer = UnogsExplorer(resource_type)
+        explorer.search_new_resource(last_hours=last_hours)
+        app.log.debug(f"{resource_type} fix explore triggered")
