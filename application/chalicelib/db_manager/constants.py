@@ -7,7 +7,7 @@ NF_BUCKET = "netflix-raw-data"
 ES_HOST = (
     "search-netflix-data-zp4wrfi3rxyj55kxpc2ssurfqu.ap-southeast-1.es.amazonaws.com"
 )
-ES_TEMPLATE_PREFIX = "netflix-v1-resource"
+ES_TEMPLATE_PREFIX = "netflix-v2-resource"
 ES_REGION = "ap-southeast-1"
 ES_DOMAIN_NAME = "netflix-data"
 

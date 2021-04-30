@@ -63,7 +63,7 @@ class Converter(object):
                 episode_info = {
                     "ep_id": episode["epid"],
                     "ep_num": episode["epnum"],
-                    "season": episode["seasnum"],
+                    "season_num": episode["seasnum"],
                     "synopsis": episode["synopsis"],
                     "title": episode["title"],
                     "img": episode["img"],
@@ -139,4 +139,5 @@ def do_etl(s3_key, resource_type):
 
 
 if __name__ == "__main__":
-    do_etl("series/2021-04-26/daily_scrape_data-0.json", "series")
+    # setup()
+    do_etl("movie/2021-04-26/daily_scrape_data-0.json", "movie")
