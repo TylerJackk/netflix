@@ -5,7 +5,6 @@ from chalice import Chalice, Cron
 from chalicelib.db_manager.constants import NF_ID_QUEUE, NF_ETL_QUEUE
 from chalicelib.db_manager.s3_client import S3Client
 from chalicelib.etl.converter import do_etl
-from chalicelib.helper.send_notification import send_ifttt
 from chalicelib.helper.utils import chunks
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import MOVIE, TV
@@ -69,7 +68,6 @@ def scrape_nf_detail(event):
         identifier = f"{scrape_type}_data-{batch}"
         key = s3.build_key(resource_type, identifier)
         s3.put(key, s3_data)
-        send_ifttt(f"{resource_type} {identifier} saved to S3")
         send_sqs_msg(
             queue_name=NF_ETL_QUEUE,
             body={
@@ -134,7 +132,6 @@ def etl(event):
         s3_paths = body.get("s3_paths")
         for s3_path in s3_paths:
             do_etl(s3_path, resource_type)
-            send_ifttt(f"{s3_path} loaded to ES")
 
 
 # ============== pure lambda function ===========
