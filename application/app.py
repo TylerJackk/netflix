@@ -10,7 +10,7 @@ from chalicelib.helper.utils import chunks
 from chalicelib.msg_queue.sqs import send_sqs_msg
 from chalicelib.scraper.constants import MOVIE, TV
 from chalicelib.scraper.scraper import UnogsExplorer, UnogsScraper
-from chalicelib.service.es_reader import ESParameter, ESReader
+from chalicelib.service.es_reader import ESParameter
 from chalicelib.service.nf_reader import NFReader
 
 app = Chalice(app_name="application")

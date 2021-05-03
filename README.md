@@ -1,34 +1,47 @@
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+## Features
+* Scraping data from Unogos website
+  * historical scraping for all data
+  * daily scraping new data
+* Raw data storage and ETL
+  * save raw data to S3
+  * S3 -> ETL -> ElasticSearch
+* Backend service providing search ability
 
-## Requirements
-```bigquery
-python 3.9.0b5
-```
+## Tech
+
+![](https://img.shields.io/badge/Python-3.9.2-blue)
+
+**built with**
+* AWS Lambda
+* AWS SQS
+* AWS S3
+* AWS ElasticService(ElasticSearch)
+* Chalice
+* The Movie Database SDK
+
 ## Project Structure
 ```
 .
 ├── README.md
-└── application # chalice project root dir
-    ├── app.py # all route information
-    ├── chalicelib # config files and additional application modules
-    │   ├── __init__.py
-    │   └── constants.py
-    └── requirements.txt
-
+├── application # chalice project root dir
+│   ├── __pycache__
+│   │   └── app.cpython-39.pyc
+│   ├── app.py # all lambda function
+│   ├── chalicelib # config files and additional application modules
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── constants.py
+│   │   ├── db_manager # storage manager
+│   │   ├── etl # ETL releated code
+│   │   ├── helper
+│   │   ├── msg_queue
+│   │   ├── scraper 
+│   │   └── service # Backend Service
+│   ├── requirements.txt # deployment env requirements
+│   └── tests
+│       ├── __init__.py
+│       ├── __pycache__
+│       └── test_app.py
+├── requirements.txt # dev env requirements
+└── scrape.py
 ```
-
-
-
-## Storage
-
-### S3
-raw data from unogs
-```
-#/Bucket/Region/Resource_type/data_by_date
-#/my-netflix-bucket/HK/Movie/2021-03-17-1
-```
-
-### Elasticsearch
-converted data
-
-S3 ---> ES(ETL)
