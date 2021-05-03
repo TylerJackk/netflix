@@ -1,6 +1,3 @@
-## Project Title
-This Project is aim to scraping Netflix resource info and provide RESTful API.
-
 ## Features
 * Scraping data from Unogos website
   * historical scraping for all data

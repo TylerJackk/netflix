@@ -54,6 +54,26 @@ class Converter(object):
         return country_info
 
     @staticmethod
+    def _build_season_info(season_data):
+        season_info = []
+        for season in season_data:
+            data = {"season": season["season"]}
+            episodes = []
+            for episode in season.get("episodes"):
+                episode_info = {
+                    "ep_id": episode["epid"],
+                    "ep_num": episode["epnum"],
+                    "season_num": episode["seasnum"],
+                    "synopsis": episode["synopsis"],
+                    "title": episode["title"],
+                    "img": episode["img"],
+                }
+                episodes.append(episode_info)
+            data["episodes"] = episodes
+            season_info.append(data)
+        return season_info
+
+    @staticmethod
     def _build_images(images):
         image_info = {}
         for key, value in images.items():
@@ -96,6 +116,9 @@ class Converter(object):
                 "created_time": datetime.now(),
             },
         }
+        if self.resource_type == TV:
+            season_info = self._build_season_info(data.get("episode"))
+            es_data["body"]["season_info"] = season_info
         return es_data
 
 
@@ -113,3 +136,8 @@ def do_etl(s3_key, resource_type):
     for _id, resource in raw_data.items():
         es_data = convert.build_es_data(resource)
         es.put(es_resource_index_mapping[resource_type], es_data)
+
+
+if __name__ == "__main__":
+    # setup()
+    do_etl("movie/2021-04-26/daily_scrape_data-0.json", "movie")
