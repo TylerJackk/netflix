@@ -36,9 +36,6 @@ HEADERS = {
 DAILY_SCRAPE = "daily_scrape"
 HISTORICAL_SCRAPE = "historical_scrape"
 
-HOT_COUNTRY = ["Japan ", "Hong Kong ", "United States", "Singapore "]
-
-
 GENRE_ID_MAPPING = {
     "Dramas militares": 11,
     "Mockumentaries": 26,
@@ -653,3 +650,10 @@ COUNTRY_CODE_ID_MAPPING = {
     "GB": 46,
     "US": 78,
 }
+
+if __name__ == "__main__":
+    m = {v: k for k, v in COUNTRY_NAME_ID_MAPPING.items()}
+    country_code_name_mapping = {}
+    for k, v in COUNTRY_CODE_ID_MAPPING.items():
+        country_code_name_mapping[k] = m[v]
+    print(country_code_name_mapping)

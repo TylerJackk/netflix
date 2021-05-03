@@ -60,16 +60,16 @@ ES_MAPPING = {
                 "season_info": {
                     "type": "nested",
                     "properties": {
-                        "season": {'type': "integer"},
+                        "season": {"type": "integer"},
                         "episodes": {
                             "type": "nested",
                             "properties": {
-                                "ep_id": {'type': "integer"},
-                                "ep_num": {'type': "integer"},
-                                "season_num": {'type': "integer"},
-                                "synopsis": {'type': "text"},
-                                "title": {'type': "text"},
-                                "img": {'type': "keyword"},
+                                "ep_id": {"type": "integer"},
+                                "ep_num": {"type": "integer"},
+                                "season_num": {"type": "integer"},
+                                "synopsis": {"type": "text"},
+                                "title": {"type": "text"},
+                                "img": {"type": "keyword"},
                             },
                         },
                     },

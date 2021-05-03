@@ -2,17 +2,12 @@
 query = {
     "aggs": {
         "country_info": {
-            "nested": {
-                "path": "country_info"
-            },
+            "nested": {"path": "country_info"},
             "aggs": {
                 "code_count": {
-                    "terms": {
-                        "field": "country_info.country_code",
-                        "size": 100
-                    }
+                    "terms": {"field": "country_info.country_code", "size": 100}
                 }
-            }
+            },
         }
     }
 }
@@ -21,17 +16,10 @@ query = {
 query1 = {
     "aggs": {
         "country_info": {
-            "nested": {
-                "path": "country_info"
-            },
+            "nested": {"path": "country_info"},
             "aggs": {
-                "code_count": {
-                    "terms": {
-                        "field": "country_info.audio",
-                        "size": 100
-                    }
-                }
-            }
+                "code_count": {"terms": {"field": "country_info.audio", "size": 100}}
+            },
         }
     }
 }
@@ -39,18 +27,10 @@ query1 = {
 query3 = {
     "aggs": {
         "country_info": {
-            "nested": {
-                "path": "country_info"
-            },
+            "nested": {"path": "country_info"},
             "aggs": {
-                "code_count": {
-                    "terms": {
-                        "field": "country_info.subtitle",
-                        "size": 100
-                    }
-                }
-            }
+                "code_count": {"terms": {"field": "country_info.subtitle", "size": 100}}
+            },
         }
     }
 }
-
