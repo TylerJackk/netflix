@@ -23,3 +23,4 @@ class NFReader(object):
                     "available_country_codes": available_country_codes,
                 }
             )
+        return result
