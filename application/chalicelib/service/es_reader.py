@@ -10,7 +10,7 @@ class ESReader(object):
 
     @property
     def default_search_index(self):
-        return "netflix-v1*"
+        return "netflix-v2*"
 
     def _build_country_code_query(self):
         """

@@ -1,7 +1,7 @@
 import boto3
 import json
 
-from chalicelib.db_manager.constants import REGION, NF_ID_QUEUE
+from chalicelib.db_manager.constants import REGION
 
 
 def send_sqs_msg(queue_name, body):
